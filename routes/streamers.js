@@ -21,10 +21,11 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
     })
     .then(function(response) {
       // handle success
-      console.log(response);
+      // console.log(response);
+      console.log(JSON.stringify(response.data));
       if (response.data && response.data.data && response.data.data.id) {
         subTopicById(req, res, response.data.id);
-        
+
       } else {
         res.render('streamerhook', {
           user: req.user,
@@ -34,7 +35,7 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
     })
     .catch(function(error) {
       // handle error
-      console.log(error);
+      // console.log(error);
       res.render('streamerhook', {
         user: req.user,
         streamer: streamer
@@ -61,11 +62,11 @@ function subTopicById(req, res, streamerId) {
     })
     .then(function(response) {
       // handle success
-      console.log(response);
+      // console.log(response);
     })
     .catch(function(error) {
       // handle error
-      console.log(error);
+      // console.log(error);
     })
     .then(function() {
       // always executed
