@@ -24,7 +24,7 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
       // console.log(response);
       console.log('getIdByUsernameAndSubTopic response = ' + JSON.stringify(response.data));
       if (response.data && response.data.data && response.data.data.length > 0 && response.data.data[0].id) {
-        subTopicById(req, res, response.data.data[0].id);
+        subTopicById(req, res, streamer, response.data.data[0].id);
 
       } else {
         res.render('streamerhook', {
@@ -46,7 +46,7 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
     });
 }
 
-function subTopicById(req, res, streamerId) {
+function subTopicById(req, res, streamer, streamerId) {
 
   var topic = 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamerId;
   console.log('topic = ' + topic);
@@ -75,7 +75,7 @@ function subTopicById(req, res, streamerId) {
       // always executed
       res.render('streamerhook', {
         user: req.user,
-        streamer: streamerId
+        streamer: streamer
       });
     });
 }
