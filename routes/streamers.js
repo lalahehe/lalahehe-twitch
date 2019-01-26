@@ -12,11 +12,12 @@ function ensureAuthenticated(req, res, next) {
 function getIdByUsernameAndSubTopic(req, res, streamer) {
 
   axios.get('https://api.twitch.tv/helix/users', {
-      'login': streamer
-    }, {
+      params: {
+        'login': streamer
+      },
       headers: {
         'Client-ID': process.env.TWITCH_CLIENT_ID
-      },
+      }
     })
     .then(function(response) {
       // handle success
@@ -81,8 +82,7 @@ router.post('/', ensureAuthenticated, function(req, res, next) {
   }
   if (streamer != '') {
     getIdByUsernameAndSubTopic(req, res, streamer);
-  }
-  else {
+  } else {
     res.redirect('/');
   }
 
