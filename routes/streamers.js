@@ -11,7 +11,7 @@ function ensureAuthenticated(req, res, next) {
 
 function getIdByUsernameAndSubTopic(req, res, streamer) {
 
-  axios.post('https://api.twitch.tv/helix/users', {
+  axios.get('https://api.twitch.tv/helix/users', {
       'login': streamer
     }, {
       headers: {
