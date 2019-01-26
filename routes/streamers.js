@@ -1,0 +1,51 @@
+var express = require('express');
+var router = express.Router();
+var axios = require('axios');
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/')
+}
+
+/* GET users listing. */
+router.post('/', ensureAuthenticated, function(req, res, next) {
+
+  var streamer = req.body.streamer;
+  if (streamer) {
+    streamer = streamer.trim();
+  }
+  if (streamer != '') {
+    axios.post('https://api.twitch.tv/helix/webhooks/hub', {
+        'hub.mode': 'subscribe',
+        'hub.topic': 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamer,
+        'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK,
+        'hub.lease_seconds': '864000',
+        'hub.secret': 's3cRe7'
+      }, {
+        headers: {
+          'Client-ID': process.env.TWITCH_CLIENT_ID,
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(function(response) {
+        // handle success
+        console.log(response);
+      })
+      .catch(function(error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function() {
+        // always executed
+        res.render('streamerhook', {
+          user: req.user,
+          streamer: streamer
+        });
+      });
+  }
+
+});
+
+module.exports = router;
