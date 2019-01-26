@@ -22,7 +22,7 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
     .then(function(response) {
       // handle success
       // console.log(response);
-      // console.log(JSON.stringify(response.data));
+      console.log('getIdByUsernameAndSubTopic response = ' + JSON.stringify(response.data));
       if (response.data && response.data.data && response.data.data.id) {
         subTopicById(req, res, response.data.data.id);
 
@@ -48,9 +48,12 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
 
 function subTopicById(req, res, streamerId) {
 
+  var topic = 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamerId;
+  console.log('topic = ' + topic);
+
   axios.post('https://api.twitch.tv/helix/webhooks/hub', {
       'hub.mode': 'subscribe',
-      'hub.topic': 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamerId,
+      'hub.topic': topic,
       'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK,
       'hub.lease_seconds': '864000',
       'hub.secret': 's3cRe7'
