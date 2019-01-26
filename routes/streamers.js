@@ -22,8 +22,14 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
     .then(function(response) {
       // handle success
       console.log(response);
-      if (response.data && response.data.id) {
+      if (response.data && response.data.data && response.data.data.id) {
         subTopicById(req, res, response.data.id);
+        
+      } else {
+        res.render('streamerhook', {
+          user: req.user,
+          streamer: streamer
+        });
       }
     })
     .catch(function(error) {
