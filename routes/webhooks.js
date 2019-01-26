@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var TwitchSubRequest = require('../models/TwitchSubRequest');
 
 var socketIO = {
   io: null
@@ -21,14 +22,25 @@ router.get('/callback', function(req, res, next) {
   var hubleaseseconds = req.params['hub.lease_seconds'];
   var hubchallenge = req.params['hub.challenge'];
 
+
+  var tsr = new TwitchSubRequest({
+    mode: hubmode,
+    topic: hubtopic,
+    lease_seconds: hubleaseseconds,
+    challenge: hubchallenge
+  });
+  tsr.save(function(err) {
+    if (err) {
+      console.log(err);
+    } else {}
+  });
+
   // socketIO.io.emit('time', new Date().toTimeString());
   if (hubmode == 'subscribe') {
     res.status(200).send(hubchallenge);
-  }
-  else if (hubmode == 'denied') {
+  } else if (hubmode == 'denied') {
     res.status(200).send('OK');
-  }
-  else {
+  } else {
     res.status(200).send('OK');
   }
 });
