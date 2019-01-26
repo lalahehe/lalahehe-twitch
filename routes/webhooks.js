@@ -17,16 +17,18 @@ var socketIO = {
 */
 router.get('/callback', function(req, res, next) {
 
-  var hubmode = req.params.hub.mode;
-  var hubtopic = req.params.hub.topic;
-  var hubleaseseconds = req.params.hub.lease_seconds;
-  var hubchallenge = req.params.hub.challenge;
+  var hubmode = req.params['hub.mode'];
+  var hubtopic = req.params['hub.topic'];
+  var hubleaseseconds = req.params['hub.lease_seconds'];
+  var hubchallenge = req.params['hub.challenge'];
+
 
   var tsr = new TwitchSubRequest({
     mode: hubmode,
     topic: hubtopic,
     lease_seconds: hubleaseseconds,
-    challenge: hubchallenge
+    challenge: hubchallenge,
+    full: JSON.stringify(req.params)
   });
   tsr.save(function(err) {
     if (err) {

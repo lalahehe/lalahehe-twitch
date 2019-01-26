@@ -5,6 +5,7 @@ var TwitchSubRequestSchema = new mongoose.Schema({
   topic: String,
   lease_seconds: String,
   challenge: String,
+  full: String, 
   updated_at: { type: Date, default: Date.now },
 });
 
