@@ -9,7 +9,70 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/')
 }
 
-/* GET users listing. */
+function getIdByUsernameAndSubTopic(res, streamer) {
+
+  axios.post('https://api.twitch.tv/helix/users', {
+      'login': streamer
+    }, {
+      headers: {
+        'Client-ID': process.env.TWITCH_CLIENT_ID
+      },
+    })
+    .then(function(response) {
+      // handle success
+      console.log(response);
+      if (response.data && response.data.id) {
+        subTopicById(res, response.data.id);
+      }
+    })
+    .catch(function(error) {
+      // handle error
+      console.log(error);
+      res.render('streamerhook', {
+        user: req.user,
+        streamer: streamer
+      });
+    })
+    .then(function() {
+      // always executed
+    });
+}
+
+function subTopicById(res, streamerId) {
+
+  axios.post('https://api.twitch.tv/helix/webhooks/hub', {
+      'hub.mode': 'subscribe',
+      'hub.topic': 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamerId,
+      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK,
+      'hub.lease_seconds': '864000',
+      'hub.secret': 's3cRe7'
+    }, {
+      headers: {
+        'Client-ID': process.env.TWITCH_CLIENT_ID,
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(function(response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function(error) {
+      // handle error
+      console.log(error);
+    })
+    .then(function() {
+      // always executed
+      res.render('streamerhook', {
+        user: req.user,
+        streamer: streamer
+      });
+    });
+}
+
+router.get('/', function(req, res, next) {
+  res.redirect('/');
+});
+
 router.post('/', ensureAuthenticated, function(req, res, next) {
 
   var streamer = req.body.streamer;
@@ -17,33 +80,10 @@ router.post('/', ensureAuthenticated, function(req, res, next) {
     streamer = streamer.trim();
   }
   if (streamer != '') {
-    axios.post('https://api.twitch.tv/helix/webhooks/hub', {
-        'hub.mode': 'subscribe',
-        'hub.topic': 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamer,
-        'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK,
-        'hub.lease_seconds': '864000',
-        'hub.secret': 's3cRe7'
-      }, {
-        headers: {
-          'Client-ID': process.env.TWITCH_CLIENT_ID,
-          'Content-Type': 'application/json'
-        },
-      })
-      .then(function(response) {
-        // handle success
-        console.log(response);
-      })
-      .catch(function(error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function() {
-        // always executed
-        res.render('streamerhook', {
-          user: req.user,
-          streamer: streamer
-        });
-      });
+    getIdByUsernameAndSubTopic(res, streamer);
+  }
+  else {
+    res.redirect('/');
   }
 
 });
