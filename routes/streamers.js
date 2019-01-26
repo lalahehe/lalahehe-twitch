@@ -75,7 +75,7 @@ function subTopicById(req, res, streamerId) {
       // always executed
       res.render('streamerhook', {
         user: req.user,
-        streamer: streamer
+        streamer: streamerId
       });
     });
 }
