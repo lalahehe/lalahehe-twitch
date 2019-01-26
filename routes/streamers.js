@@ -9,7 +9,7 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/')
 }
 
-function getIdByUsernameAndSubTopic(res, streamer) {
+function getIdByUsernameAndSubTopic(req, res, streamer) {
 
   axios.post('https://api.twitch.tv/helix/users', {
       'login': streamer
@@ -22,7 +22,7 @@ function getIdByUsernameAndSubTopic(res, streamer) {
       // handle success
       console.log(response);
       if (response.data && response.data.id) {
-        subTopicById(res, response.data.id);
+        subTopicById(req, res, response.data.id);
       }
     })
     .catch(function(error) {
@@ -38,7 +38,7 @@ function getIdByUsernameAndSubTopic(res, streamer) {
     });
 }
 
-function subTopicById(res, streamerId) {
+function subTopicById(req, res, streamerId) {
 
   axios.post('https://api.twitch.tv/helix/webhooks/hub', {
       'hub.mode': 'subscribe',
@@ -80,7 +80,7 @@ router.post('/', ensureAuthenticated, function(req, res, next) {
     streamer = streamer.trim();
   }
   if (streamer != '') {
-    getIdByUsernameAndSubTopic(res, streamer);
+    getIdByUsernameAndSubTopic(req, res, streamer);
   }
   else {
     res.redirect('/');
