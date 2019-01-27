@@ -54,7 +54,7 @@ function subTopicById(req, res, streamer, streamerId) {
   axios.post('https://api.twitch.tv/helix/webhooks/hub', {
       'hub.mode': 'subscribe',
       'hub.topic': topic,
-      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK,
+      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/follows',
       'hub.lease_seconds': '864000',
       'hub.secret': 's3cRe7'
     }, {
@@ -75,7 +75,8 @@ function subTopicById(req, res, streamer, streamerId) {
       // always executed
       res.render('streamerhook', {
         user: req.user,
-        streamer: streamer
+        streamer: streamer,
+        streamerId: streamerId
       });
     });
 }

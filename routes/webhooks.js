@@ -50,8 +50,16 @@ router.get('/callback', function(req, res, next) {
 router.post('/callback', function(req, res, next) {
 
   var body = req.body;
-  console.log('body = ' + JSON.stringify(body));
-  socketIO.io.emit('time', JSON.stringify(body));
+  console.log('callback body = ' + JSON.stringify(body));
+  socketIO.io.emit('callback', JSON.stringify(body));
+
+});
+
+router.post('/callback/follows', function(req, res, next) {
+
+  var body = req.body;
+  console.log('callback follows body = ' + JSON.stringify(body));
+  socketIO.io.emit('topic' + body.data[0].to_id, body.data[0].from_name + ' followed ' + body.data[0].to_name);
 
 });
 

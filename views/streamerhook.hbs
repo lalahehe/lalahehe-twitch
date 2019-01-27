@@ -19,7 +19,7 @@
 <script>
   var socket = io();
   var el = document.getElementById('server-time');
-  socket.on('time', function(timeString) {
+  socket.on('topic{{streamerId}}', function(timeString) {
     el.innerHTML = timeString;
   });
 </script>
