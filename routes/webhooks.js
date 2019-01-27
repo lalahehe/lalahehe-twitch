@@ -38,7 +38,7 @@ function handleSubscriptionVerifyRequest(req, res, next) {
     if (hubmode == 'subscribe') {
       res.status(200).send(hubchallenge);
     } else if (hubmode == 'unsubscribe') {
-      res.status(200).send('OK');
+      res.status(200).send(hubchallenge);
     } else if (hubmode == 'denied') {
       res.status(200).send('OK');
     } else {

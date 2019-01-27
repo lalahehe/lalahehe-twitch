@@ -25,12 +25,33 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
       console.log('getIdByUsernameAndSubTopic response = ' + JSON.stringify(response.data));
       if (response.data && response.data.data && response.data.data.length > 0 && response.data.data[0].id) {
 
-        subTopicUsersById(req, res, streamer, response.data.data[0].id);
+        var promiseFollows = subTopicFollowsById(streamer, response.data.data[0].id);
+        var promiseStreams = subTopicStreamsById(streamer, response.data.data[0].id);
+        var promiseUsers = subTopicUsersById(streamer, response.data.data[0].id);
+
+        Promise.all([promiseFollows, promiseStreams, promiseUsers])
+          .then(function(response) {
+            // handle success
+            // console.log(response);
+          })
+          .catch(function(error) {
+            // handle error
+            // console.log(error);
+          })
+          .then(function() {
+            // always executed
+            res.render('streamerhook', {
+              user: req.user,
+              streamer: streamer,
+              streamerId: streamerId
+            });
+          })
 
       } else {
         res.render('streamerhook', {
           user: req.user,
-          streamer: streamer
+          streamer: streamer,
+          streamerId: ''
         });
       }
     })
@@ -39,7 +60,8 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
       // console.log(error);
       res.render('streamerhook', {
         user: req.user,
-        streamer: streamer
+        streamer: streamer,
+        streamerId: ''
       });
     })
     .then(function() {
@@ -47,109 +69,67 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
     });
 }
 
-function subTopicFollowsById(req, res, streamer, streamerId) {
+function subTopicFollowsById(streamer, streamerId) {
 
   var topic = 'https://api.twitch.tv/helix/users/follows?first=1&to_id=' + streamerId;
   console.log('topic = ' + topic);
 
-  axios.post('https://api.twitch.tv/helix/webhooks/hub', {
-      'hub.mode': 'subscribe',
-      'hub.topic': topic,
-      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/follows/' + streamerId,
-      'hub.lease_seconds': '864000',
-      'hub.secret': 's3cRe7'
-    }, {
-      headers: {
-        'Client-ID': process.env.TWITCH_CLIENT_ID,
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(function(response) {
-      // handle success
-      // console.log(response);
-    })
-    .catch(function(error) {
-      // handle error
-      // console.log(error);
-    })
-    .then(function() {
-      // always executed
-      res.render('streamerhook', {
-        user: req.user,
-        streamer: streamer,
-        streamerId: streamerId
-      });
-    });
+  var p = axios.post('https://api.twitch.tv/helix/webhooks/hub', {
+    'hub.mode': 'subscribe',
+    'hub.topic': topic,
+    'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/follows/' + streamerId,
+    'hub.lease_seconds': '864000',
+    'hub.secret': 's3cRe7'
+  }, {
+    headers: {
+      'Client-ID': process.env.TWITCH_CLIENT_ID,
+      'Content-Type': 'application/json'
+    },
+  });
+
+  return p;
 }
 
-function subTopicStreamsById(req, res, streamer, streamerId) {
+function subTopicStreamsById(streamer, streamerId) {
 
   var topic = 'https://api.twitch.tv/helix/streams?user_id=' + streamerId;
   console.log('topic = ' + topic);
 
-  axios.post('https://api.twitch.tv/helix/webhooks/hub', {
-      'hub.mode': 'subscribe',
-      'hub.topic': topic,
-      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/streams/' + streamerId,
-      'hub.lease_seconds': '864000',
-      'hub.secret': 's3cRe7'
-    }, {
-      headers: {
-        'Client-ID': process.env.TWITCH_CLIENT_ID,
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(function(response) {
-      // handle success
-      // console.log(response);
-    })
-    .catch(function(error) {
-      // handle error
-      // console.log(error);
-    })
-    .then(function() {
-      // always executed
-      res.render('streamerhook', {
-        user: req.user,
-        streamer: streamer,
-        streamerId: streamerId
-      });
-    });
+  var p = axios.post('https://api.twitch.tv/helix/webhooks/hub', {
+    'hub.mode': 'subscribe',
+    'hub.topic': topic,
+    'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/streams/' + streamerId,
+    'hub.lease_seconds': '864000',
+    'hub.secret': 's3cRe7'
+  }, {
+    headers: {
+      'Client-ID': process.env.TWITCH_CLIENT_ID,
+      'Content-Type': 'application/json'
+    },
+  });
+
+  return p;
 }
 
-function subTopicUsersById(req, res, streamer, streamerId) {
+function subTopicUsersById(streamer, streamerId) {
 
   var topic = 'https://api.twitch.tv/helix/users?id=' + streamerId;
   console.log('topic = ' + topic);
 
-  axios.post('https://api.twitch.tv/helix/webhooks/hub', {
-      'hub.mode': 'subscribe',
-      'hub.topic': topic,
-      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/users/' + streamerId,
-      'hub.lease_seconds': '864000',
-      'hub.secret': 's3cRe7'
-    }, {
-      headers: {
-        'Client-ID': process.env.TWITCH_CLIENT_ID,
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(function(response) {
-      // handle success
-      // console.log(response);
-    })
-    .catch(function(error) {
-      // handle error
-      // console.log(error);
-    })
-    .then(function() {
-      // always executed
-      res.render('streamerhook', {
-        user: req.user,
-        streamer: streamer,
-        streamerId: streamerId
-      });
-    });
+  var p = axios.post('https://api.twitch.tv/helix/webhooks/hub', {
+    'hub.mode': 'subscribe',
+    'hub.topic': topic,
+    'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/users/' + streamerId,
+    'hub.lease_seconds': '864000',
+    'hub.secret': 's3cRe7'
+  }, {
+    headers: {
+      'Client-ID': process.env.TWITCH_CLIENT_ID,
+      'Content-Type': 'application/json'
+    },
+  });
+
+  return p;
 }
 
 router.get('/', function(req, res, next) {
