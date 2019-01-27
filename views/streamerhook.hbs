@@ -1,35 +1,38 @@
-<!-- Add a placeholder for the Twitch embed -->
-<div id="twitch-embed"></div>
+<div class="row">
+  <div class="col-10">
+    <!-- Add a placeholder for the Twitch embed -->
+    <div id="twitch-embed"></div>
+    <!-- Load the Twitch embed script -->
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
+    <!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
+    <script type="text/javascript">
+      new Twitch.Embed("twitch-embed", {
+        width: 854,
+        height: 480,
+        channel: "{{streamer}}"
+      });
+    </script>
 
-<!-- Load the Twitch embed script -->
-<script src="https://embed.twitch.tv/embed/v1.js"></script>
-
-<!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
-<script type="text/javascript">
-  new Twitch.Embed("twitch-embed", {
-    width: 854,
-    height: 480,
-    channel: "{{streamer}}"
-  });
-</script>
-
-<p id='topic-box'>
-</p>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var messages = [];
-  var socket = io();
-  var el = document.getElementById('topic-box');
-  socket.on('topic{{streamerId}}', function(msg) {
-    if (messages.length == 10) {
-      messages.shift();
-    }
-    messages.push(msg);
-    var html = '<ul>';
-    for (var i=0; i<messages.length; i++) {
-      html += '<li>' + messages[i] + '</li>';
-    }
-    html += '</ul>';
-    el.innerHTML = html;
-  });
-</script>
+  </div>
+  <div class="col-2">
+    <div id='topic-box'></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var messages = [];
+      var socket = io();
+      var el = document.getElementById('topic-box');
+      socket.on('topic{{streamerId}}', function(msg) {
+        if (messages.length == 10) {
+          messages.shift();
+        }
+        messages.push(msg);
+        var html = '<ul>';
+        for (var i = 0; i < messages.length; i++) {
+          html += '<li>' + messages[i] + '</li>';
+        }
+        html += '</ul>';
+        el.innerHTML = html;
+      });
+    </script>
+  </div>
+</div>
