@@ -58,15 +58,32 @@ router.post('/callback', function(req, res, next) {
 
 });
 
-router.get('/callback/follows', function(req, res, next) {
+router.get('/callback/follows/:streamerId', function(req, res, next) {
   handleSubscriptionVerifyRequest(req, res, next);
 });
 
-router.post('/callback/follows', function(req, res, next) {
+router.post('/callback/follows/:streamerId', function(req, res, next) {
 
   var body = req.body;
   console.log('callback follows body = ' + JSON.stringify(body));
-  socketIO.io.emit('topic' + body.data[0].to_id, body.data[0].from_name + ' followed ' + body.data[0].to_name);
+  socketIO.io.emit('topic' + req.params.streamerId, body.data[0].from_name + ' followed ' + body.data[0].to_name);
+
+});
+
+router.get('/callback/streams/:streamerId', function(req, res, next) {
+  handleSubscriptionVerifyRequest(req, res, next);
+});
+
+router.post('/callback/streams/:streamerId', function(req, res, next) {
+
+  var body = req.body;
+  console.log('callback streams body = ' + JSON.stringify(body));
+  if (body.data && body.data.length > 0) {
+    socketIO.io.emit('topic' + req.params.streamerId, 'Stream ' + body.data[0].title + ' changed');
+  }
+  else {
+    socketIO.io.emit('topic' + req.params.streamerId, 'Stream go offline');
+  }
 
 });
 
