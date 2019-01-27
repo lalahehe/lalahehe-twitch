@@ -46,17 +46,17 @@ function handleSubscriptionVerifyRequest(req, res, next) {
     }
 }
 
-router.get('/callback', function(req, res, next) {
-  handleSubscriptionVerifyRequest(req, res, next);
-});
-
-router.post('/callback', function(req, res, next) {
-
-  var body = req.body;
-  console.log('callback body = ' + JSON.stringify(body));
-  socketIO.io.emit('topic', JSON.stringify(body));
-
-});
+// router.get('/callback', function(req, res, next) {
+//   handleSubscriptionVerifyRequest(req, res, next);
+// });
+//
+// router.post('/callback', function(req, res, next) {
+//
+//   var body = req.body;
+//   console.log('callback body = ' + JSON.stringify(body));
+//   socketIO.io.emit('topic', JSON.stringify(body));
+//
+// });
 
 router.get('/callback/follows/:streamerId', function(req, res, next) {
   handleSubscriptionVerifyRequest(req, res, next);
