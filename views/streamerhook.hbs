@@ -13,13 +13,23 @@
   });
 </script>
 
-<p id='server-time'>
+<p id='topic-box'>
 </p>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+  var messages = [];
   var socket = io();
-  var el = document.getElementById('server-time');
-  socket.on('topic{{streamerId}}', function(timeString) {
-    el.innerHTML = timeString;
+  var el = document.getElementById('topic-box');
+  socket.on('topic{{streamerId}}', function(msg) {
+    if (messages.length == 10) {
+      messages.shift();
+    }
+    messages.push(msg);
+    var html = '<ul>';
+    for (var i=0; i<messages.length; i++) {
+      html += '<li>' + messages[i] + '</li>';
+    }
+    html += '</ul>';
+    el.innerHTML = html;
   });
 </script>
