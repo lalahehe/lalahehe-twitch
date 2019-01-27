@@ -43,7 +43,7 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
             res.render('streamerhook', {
               user: req.user,
               streamer: streamer,
-              streamerId: streamerId
+              streamerId: response.data.data[0].id
             });
           })
 
