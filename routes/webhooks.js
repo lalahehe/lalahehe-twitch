@@ -28,7 +28,7 @@ router.get('/callback', function(req, res, next) {
     topic: hubtopic,
     lease_seconds: hubleaseseconds,
     challenge: hubchallenge,
-    full: JSON.stringify(req.params)
+    full: JSON.stringify(req.query)
   });
   tsr.save(function(err) {
     if (err) {
@@ -36,7 +36,6 @@ router.get('/callback', function(req, res, next) {
     } else {}
   });
 
-  // socketIO.io.emit('time', new Date().toTimeString());
   if (hubmode == 'subscribe') {
     res.status(200).send(hubchallenge);
   } else if (hubmode == 'unsubscribe') {
@@ -51,6 +50,7 @@ router.get('/callback', function(req, res, next) {
 router.post('/callback', function(req, res, next) {
 
   var body = req.body;
+  console.log('body = ' + JSON.stringify(body));
   socketIO.io.emit('time', JSON.stringify(body));
 
 });
