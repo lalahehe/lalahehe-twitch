@@ -87,6 +87,18 @@ router.post('/callback/streams/:streamerId', function(req, res, next) {
 
 });
 
+router.get('/callback/users/:streamerId', function(req, res, next) {
+  handleSubscriptionVerifyRequest(req, res, next);
+});
+
+router.post('/callback/users/:streamerId', function(req, res, next) {
+
+  var body = req.body;
+  console.log('callback users body = ' + JSON.stringify(body));
+  socketIO.io.emit('topic' + req.params.streamerId, 'User ' + body.data[0].display_name + '’s profile data changes');
+
+
+});
 module.exports = {
   router: router,
   socketIO: socketIO

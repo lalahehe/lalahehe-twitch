@@ -25,7 +25,7 @@ function getIdByUsernameAndSubTopic(req, res, streamer) {
       console.log('getIdByUsernameAndSubTopic response = ' + JSON.stringify(response.data));
       if (response.data && response.data.data && response.data.data.length > 0 && response.data.data[0].id) {
 
-        subTopicStreamsById(req, res, streamer, response.data.data[0].id);
+        subTopicUsersById(req, res, streamer, response.data.data[0].id);
 
       } else {
         res.render('streamerhook', {
@@ -91,6 +91,41 @@ function subTopicStreamsById(req, res, streamer, streamerId) {
       'hub.mode': 'subscribe',
       'hub.topic': topic,
       'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/streams/' + streamerId,
+      'hub.lease_seconds': '864000',
+      'hub.secret': 's3cRe7'
+    }, {
+      headers: {
+        'Client-ID': process.env.TWITCH_CLIENT_ID,
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(function(response) {
+      // handle success
+      // console.log(response);
+    })
+    .catch(function(error) {
+      // handle error
+      // console.log(error);
+    })
+    .then(function() {
+      // always executed
+      res.render('streamerhook', {
+        user: req.user,
+        streamer: streamer,
+        streamerId: streamerId
+      });
+    });
+}
+
+function subTopicUsersById(req, res, streamer, streamerId) {
+
+  var topic = 'https://api.twitch.tv/helix/users?id=' + streamerId;
+  console.log('topic = ' + topic);
+
+  axios.post('https://api.twitch.tv/helix/webhooks/hub', {
+      'hub.mode': 'subscribe',
+      'hub.topic': topic,
+      'hub.callback': process.env.TWITCH_WEBHOOK_CALLBACK + '/users/' + streamerId,
       'hub.lease_seconds': '864000',
       'hub.secret': 's3cRe7'
     }, {
